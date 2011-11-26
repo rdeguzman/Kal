@@ -38,7 +38,7 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
 
 @implementation KalViewController
 
-@synthesize dataSource, delegate, initialDate, selectedDate;
+@synthesize dataSource, delegate, initialDate, selectedDate, delegateExternal;
 
 - (id)initWithSelectedDate:(NSDate *)date
 {
@@ -46,6 +46,7 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
     logic = [[KalLogic alloc] initForDate:date];
     self.initialDate = date;
     self.selectedDate = date;
+    self.delegateExternal = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(significantTimeChangeOccurred) name:UIApplicationSignificantTimeChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:KalDataSourceChangedNotification object:nil];
   }
@@ -104,6 +105,10 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
   [dataSource loadItemsFromDate:from toDate:to];
   [tableView reloadData];
   [tableView flashScrollIndicators];
+  
+  
+  if(self.delegateExternal != nil)
+    [self.delegateExternal didSelectDate:[date NSDate] forTitle:self.title];
 }
 
 - (void)showPreviousMonth
