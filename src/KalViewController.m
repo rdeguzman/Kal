@@ -208,6 +208,7 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
+  [self.navigationItem setHidesBackButton:NO animated:YES];
   [tableView reloadData];
 }
 
