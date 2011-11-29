@@ -38,11 +38,22 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
 
 @implementation KalViewController
 
-@synthesize dataSource, delegate, initialDate, selectedDate, delegateExternal;
+@synthesize dataSource, delegate, initialDate, selectedDate, delegateExternal, applicationFrame;
 
-- (id)initWithSelectedDate:(NSDate *)date
+- (id)initWithSelectedDate:(NSDate*)date
+{
+  return [self initWithFrame:[[UIScreen mainScreen] applicationFrame] initWithSelectedDate:date];
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+  return [self initWithFrame:frame initWithSelectedDate:[NSDate date]];
+}
+
+- (id)initWithFrame:(CGRect)frame initWithSelectedDate:(NSDate *)date
 {
   if ((self = [super init])) {
+    self.applicationFrame = frame;
     logic = [[KalLogic alloc] initForDate:date];
     self.initialDate = date;
     self.selectedDate = date;
@@ -51,11 +62,6 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:KalDataSourceChangedNotification object:nil];
   }
   return self;
-}
-
-- (id)init
-{
-  return [self initWithSelectedDate:[NSDate date]];
 }
 
 - (KalView*)calendarView { return (KalView*)self.view; }
@@ -188,7 +194,8 @@ NSString *const KalDataSourceChangedNotification = @"KalDataSourceChangedNotific
 {
   if (!self.title)
     self.title = @"Calendar";
-  KalView *kalView = [[[KalView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame] delegate:self logic:logic] autorelease];
+
+  KalView *kalView = [[[KalView alloc] initWithFrame:self.applicationFrame delegate:self logic:logic] autorelease];
   self.view = kalView;
   tableView = kalView.tableView;
   tableView.dataSource = dataSource;
